@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Automatically picks up Vercel environment variable or falls back to your Render live backend
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://media-downloader-backend-2ayq.onrender.com";
+
 function App() {
     const [url, setUrl] = useState('');
     const [activeTab, setActiveTab] = useState('download'); // 'download', 'trimmer', 'thumbnail'
@@ -49,7 +52,7 @@ function App() {
         if (!url) return setStatus({ type: 'error', text: 'Please enter a valid video link.' });
         setLoading(true); setStatus(null);
         try {
-            const res = await axios.get(`http://localhost:5000/api/v1/info?url=${encodeURIComponent(url)}`);
+            const res = await axios.get(`${API_BASE_URL}/api/v1/info?url=${encodeURIComponent(url)}`);
             setVideoInfo(res.data);
             setStatus({ type: 'success', text: 'Thumbnail & metadata extracted successfully!' });
         } catch (err) {
@@ -81,7 +84,7 @@ function App() {
                 formData.append('video', uploadedFile);
 
                 const response = await axios.post(
-                    `http://localhost:5000/api/v1/trim-upload?start=${start}&end=${end}&type=${trimType}`,
+                    `${API_BASE_URL}/api/v1/trim-upload?start=${start}&end=${end}&type=${trimType}`,
                     formData,
                     {
                         headers: { 'Content-Type': 'multipart/form-data' },
@@ -104,7 +107,7 @@ function App() {
             }
 
             // Case 2 & 3: Normal Download / Link Trimming
-            let apiUrl = `http://localhost:5000/api/v1/download?url=${encodeURIComponent(url)}&type=${activeTab === 'trimmer' ? trimType : type}&quality=${quality}`;
+            let apiUrl = `${API_BASE_URL}/api/v1/download?url=${encodeURIComponent(url)}&type=${activeTab === 'trimmer' ? trimType : type}&quality=${quality}`;
             
             if (activeTab === 'trimmer') {
                 apiUrl += `&start=${start}&end=${end}`;
@@ -348,7 +351,7 @@ function App() {
                     )}
                 </div>
 
-                {/* 🌟 HOW IT WORKS & EXAMPLES SECTION */}
+                {/* HOW IT WORKS & EXAMPLES SECTION */}
                 <div className="mt-20">
                     <div className="text-center mb-10">
                         <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-2">How It Works & Live Examples</h2>
