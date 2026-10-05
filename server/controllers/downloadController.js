@@ -73,9 +73,17 @@ const processDownload = async (req, res) => {
         res.download(tempFilePath, fileName, (err) => {
             fs.unlink(tempFilePath, () => {});
         });
-    } catch (error) {
-        console.error("Download Error:", error.message);
-        if (!res.headersSent) res.status(500).json({ success: false, message: "Server processing failed." });
+   } catch (error) {
+        console.error("Download Error Message:", error.message);
+        if (error.stderr) console.error("Stderr Details:", error.stderr);
+        if (error.stdout) console.error("Stdout Details:", error.stdout);
+        
+        if (!res.headersSent) {
+            res.status(500).json({ 
+                success: false, 
+                message: error.message || "Server processing failed." 
+            });
+        }
     }
 };
 
