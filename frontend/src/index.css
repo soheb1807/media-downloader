@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *)); 
+
+/* Smooth transitions ke liye global CSS */
+body {
+  @apply transition-colors duration-500;
+}
